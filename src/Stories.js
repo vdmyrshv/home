@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import { useFetch } from './useFetch'
 
 export default function Stories() {
 
-    const [ stories, setStories ] = useState([])
-
-    useEffect(()=>{
-        //fetch("https://official-joke-api.appspot.com/jokes/random")
-        fetch("https://news-proxy-server.appspot.com/topstories")
-            .then(res=>res.json())
-            .then(json=> {
-                console.log(json)
-                setStories(json)
-            });
-        
-    },[])
-
-    console.log("stories:", stories)
+    const data = useFetch("https://news-proxy-server.appspot.com/topstories");
+    const stories = [...data];
 
     return (
         <div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const useFetch = (uri) => {
 
@@ -9,11 +10,9 @@ export const useFetch = (uri) => {
     },[])
 
     const getData = () => {
-        fetch(uri)
-            .then(res=>res.json())
-            .then(json=> {
-                console.log("joke json", json)
-                setData(json)
+        axios.get(uri)
+            .then(({data})=> {
+                setData(data)
             });
         
     }
