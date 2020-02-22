@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const useFetch = (uri) => {
@@ -9,11 +9,10 @@ export const useFetch = (uri) => {
         getData()   
     },[])
 
-    const getData = () => {
-        axios.get(uri)
-            .then(({data})=> {
-                setData(data)
-            });
+    const getData = async () => {
+        const {data} = await axios.get(uri)
+        setData(data)
+
         
     }
     return data;
