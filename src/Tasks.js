@@ -30,7 +30,7 @@ const tasksReducer = (state, action) => {
         case("DELETE_TASK"):
             return{
                 ...state,
-                completedTasks: state.tasks.filter(task=>task.id !== action.taskToDelete.id)
+                completedTasks: state.completedTasks.filter(task=>task.id !== action.taskToDelete.id)
             }
         default:
             return state;
@@ -47,7 +47,7 @@ const storeTasks = ({tasks, completedTasks})=>{
 
 const readStoredTasks = () =>{
     const taskMap = JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY))
-    return taskMap ? taskMap : {tasks: [], completedTasks: []};
+    return taskMap ? taskMap : initialTasksState;
 }
 
 const Tasks = () => {
@@ -55,10 +55,12 @@ const Tasks = () => {
 
     const [ taskText, setTaskText ] = useState('');
     const storedTasks = readStoredTasks();
-    const [ tasks, setTasks ] = useState(storedTasks.tasks);
-    const [ completedTasks, setCompletedTasks ] = useState(storedTasks.completedTasks);
+    //const [ tasks, setTasks ] = useState(storedTasks.tasks);
+    //const [ completedTasks, setCompletedTasks ] = useState(storedTasks.completedTasks);
 
-    const [state, dispatch] = useReducer(tasksReducer, initialTasksState);
+    const [state, dispatch] = useReducer(tasksReducer, storedTasks);
+
+    const {tasks, completedTasks} = state;
 
     useEffect(()=> {
         storeTasks({tasks, completedTasks});
@@ -78,15 +80,15 @@ const Tasks = () => {
 
     const completeTask = completedTask => () => {
         dispatch({type: TYPES.COMPLETE_TASK, completedTask})
-        setCompletedTasks([...completedTasks, completedTask])
-        setTasks(tasks.filter(task =>  task.id !== completedTask.id ))
+       // setCompletedTasks([...completedTasks, completedTask])
+        //setTasks(tasks.filter(task =>  task.id !== completedTask.id ))
     }
 
     //curried fn method of event handler fn
 
     const deleteTask = taskToDelete => () => {
         dispatch({type: TYPES.DELETE_TASK, taskToDelete})
-        setCompletedTasks(completedTasks.filter(task => task.id !== taskToDelete.id ))
+        //setCompletedTasks(completedTasks.filter(task => task.id !== taskToDelete.id ))
     }
 
     return (
