@@ -30,7 +30,7 @@ const Gallery = () => {
         setIncrement(increment < minimumIncrement ? minimumIncrement : increment );
     }
 
-    console.log(index)
+    //console.log(index)
     return (
         <div className="Gallery">
             <img src={PICTURES[index].image} alt="Bridge"/>

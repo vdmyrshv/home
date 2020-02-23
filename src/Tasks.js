@@ -1,6 +1,41 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useReducer } from 'react'
 import uuidv4 from 'uuid/v4'
+
+const initialTasksState = {
+    tasks: [],
+    completedTasks: []
+}
+
+const TYPES = {
+    ADD_TASK: 'ADD_TASK',
+    COMPLETE_TASK: 'COMPLETE_TASK',
+    DELETE_TASK: 'DELETE_TASK'
+}
+
+const tasksReducer = (state, action) => {
+    console.log("state", state, "action", action)
+    switch(action.type){
+        case("ADD_TASK"):
+            return {
+                ...state,
+                tasks:[...state.tasks, action.task] 
+            }
+        case("COMPLETE_TASK"):
+            return{
+                ...state,
+                tasks: state.tasks.filter(task=>task.id !== action.completedTask.id),
+                completedTasks:[...state.completedTasks, action.completedTask]
+            }
+        case("DELETE_TASK"):
+            return{
+                ...state,
+                completedTasks: state.tasks.filter(task=>task.id !== action.taskToDelete.id)
+            }
+        default:
+            return state;
+    }
+}
 
 
 //scream case syntax
@@ -23,6 +58,8 @@ const Tasks = () => {
     const [ tasks, setTasks ] = useState(storedTasks.tasks);
     const [ completedTasks, setCompletedTasks ] = useState(storedTasks.completedTasks);
 
+    const [state, dispatch] = useReducer(tasksReducer, initialTasksState);
+
     useEffect(()=> {
         storeTasks({tasks, completedTasks});
     }, [tasks, completedTasks])
@@ -32,13 +69,15 @@ const Tasks = () => {
     }
     
     const addTask = () => {
-        setTasks([...tasks, {text: taskText, id: uuidv4()}]);
+        dispatch({type: TYPES.ADD_TASK, task: {taskText, id: uuidv4() }})
+        //setTasks([...tasks, {taskText, id: uuidv4()}]);
         setTaskText("");
     }
 
     //curried fn method of event handler fn
 
     const completeTask = completedTask => () => {
+        dispatch({type: TYPES.COMPLETE_TASK, completedTask})
         setCompletedTasks([...completedTasks, completedTask])
         setTasks(tasks.filter(task =>  task.id !== completedTask.id ))
     }
@@ -46,6 +85,7 @@ const Tasks = () => {
     //curried fn method of event handler fn
 
     const deleteTask = taskToDelete => () => {
+        dispatch({type: TYPES.DELETE_TASK, taskToDelete})
         setCompletedTasks(completedTasks.filter(task => task.id !== taskToDelete.id ))
     }
 
@@ -59,17 +99,17 @@ const Tasks = () => {
             <br/>
             Todo List
             <div className="task-list">
-                {tasks.map(task => (
+                {state.tasks.map(task => (
                     <div key={task.id}>
-                        {task.text}-{task.id}
+                        {task.taskText}-{task.id}
                         <button onClick={completeTask(task)}>Completed</button>
                     </div>
                 ))}
             </div>
             <div className="completed-list">
-                {completedTasks.map(task => (
+                {state.completedTasks.map(task => (
                     <div key={task.id}>
-                        {task.text}- <span className="delete-span" onClick={deleteTask(task)}>X</span>
+                        {task.taskText}- <span className="delete-span" onClick={deleteTask(task)}>X</span>
                     </div>
                 ))}
             </div>
